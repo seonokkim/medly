@@ -1,0 +1,53 @@
+name: CICD - Node.js (Medly)
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 'lts/*'
+
+      - name: yarn install
+        run: yarn install
+
+      # - name: yarn test --coverage
+      #   run: yarn test --coverage
+
+      - name: yarn build
+        run: yarn build
+
+      - name: Set current datetime
+        run: echo "current_datetime=$(date +'%Y%m%d_%H:%M:%S')" >> $GITHUB_ENV
+
+      - name: Zip artifact
+        run: zip -r medly-server-$current_datetime.zip ./package* ./yarn.lock ./dist ./node_modules
+
+      - name: Deploy to Azure VM instance & Restart Nginx and medly service daemon
+        env:
+          VM_SSH_ADDR: azureuser@20.55.199.98
+          UPLOAD_PATH: /home/azureuser/medly
+          AZURE_VM_PEM_KEY: ${{ secrets.AZURE_VM_PEM_KEY }}
+          AZURE_VM_PEM_KEY_FILENAME: 3rd-prj-team3-eastus2-vm.pem
+        run: |
+          echo "$AZURE_VM_PEM_KEY" > $AZURE_VM_PEM_KEY_FILENAME
+          chmod 400 $AZURE_VM_PEM_KEY_FILENAME
+          
+          ssh -i $AZURE_VM_PEM_KEY_FILENAME -o StrictHostKeyChecking=no $VM_SSH_ADDR "sudo systemctl stop medly; rm -rf $UPLOAD_PATH/*"
+          scp -i $AZURE_VM_PEM_KEY_FILENAME -o StrictHostKeyChecking=no -r ./medly-server-$current_datetime.zip $VM_SSH_ADDR:$UPLOAD_PATH/
+          ssh -i $AZURE_VM_PEM_KEY_FILENAME -o StrictHostKeyChecking=no $VM_SSH_ADDR "cd $UPLOAD_PATH && unzip -o medly-server-$current_datetime.zip && sudo systemctl start medly && sudo systemctl restart nginx"
+
+

@@ -1,0 +1,5 @@
+flask
+requests
+lingua-language-detector
+deep-translator
+gunicorn
