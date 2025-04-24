@@ -69,5 +69,5 @@ API: `http://localhost:8080/chat`
 
 ## 📄 License
 
-MIT or project-specific – Add your licensing terms here.
-
+This project is licensed under the MIT License.  
+See the [LICENSE](./LICENSE) file for details.
