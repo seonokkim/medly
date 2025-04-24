@@ -1,6 +1,11 @@
 # 🩺 Medly Project
 
-**Medly** is a full-stack team project that integrates a mobile frontend, backend APIs, machine learning capabilities, and report generation. The project is designed to explore and demonstrate a modular architecture for building LLM-powered healthcare applications.
+Medly is an AI-powered medical consultation system designed to bridge the communication gap between patients and healthcare professionals. It integrates:
+	•	Speech-to-Text (STT) for voice input,
+	•	Summarization to condense lengthy medical explanations, and
+	•	a RAG-based chatbot to deliver personalized, context-aware responses before and after surgery.
+
+This project is a full-stack team project that integrates a mobile frontend, backend APIs, machine learning capabilities, and report generation. The project is designed to explore and demonstrate a modular architecture for building LLM-powered healthcare applications.
 
 🔗 Original team repository: [github.com/team-medly](https://github.com/team-medly)
 
